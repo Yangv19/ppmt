@@ -1,0 +1,50 @@
+<Alert></Alert>
+<section class="container">
+    <h1 class="large primary">Sign Up</h1>
+    <p class="lead">
+        <i class="fas fa-user"></i>
+        <span class="hide-mobile"> Create Your Account</span>
+    </p>
+    <form class="form" (submit)="onSubmit(signupForm)" #signupForm="ngForm">
+        <div class="form-group">
+            <input 
+                type="text" 
+                placeholder="Full Name"
+                name="name"
+                ngModel
+            />
+        </div>
+        <div class="form-group">
+            <input 
+                type="text" 
+                placeholder="Email Address"
+                name="email"
+                ngModel
+            />
+        </div>
+        <div class="form-group">
+            <input
+                type="password"
+                placeholder="Password"
+                name="password"
+                ngModel
+            />
+        </div>
+        <div class="form-group">
+            <input
+                type="password"
+                placeholder="Confirm Password"
+                name="password2"
+                ngModel
+            />
+        </div>
+        <input type="submit" class="my-1 btn bg-primary" value="Register" />
+    </form>
+    <div>
+        <p>
+            Already have an account?
+        </p>
+        <a routerLink="/login">Sign In</a>
+    </div>
+</section>
+<Footer></Footer>

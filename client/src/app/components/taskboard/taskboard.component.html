@@ -1,0 +1,39 @@
+<NotAuthorized *ngIf="!isAuthenticated"></NotAuthorized>
+<div *ngIf="isAuthenticated">
+    <Alert></Alert>
+    <section class="container">
+        <a [routerLink]="['../../create-project-task', id]" class="btn bg-light dark">
+            <i class="fas fa-plus-circle"> Create Project Task</i>
+        </a>
+        <hr class="my-1"/>
+        <div class="project-task">
+        	<div>
+        		<div class="project-task-category bg-dark">
+            		<h3 class="white">
+            			TODO
+            		</h3>
+            	</div>
+            	<ProjectTaskItem *ngFor="let projectTask of todoItems" [projectTask]="projectTask" [project]="id">
+                </ProjectTaskItem>
+        	</div>
+        	<div>
+        		<div class="project-task-category bg-primary">
+            		<h3 class="white">
+            			IN-PROGRESS
+            		</h3>
+            	</div>
+            	<ProjectTaskItem *ngFor="let projectTask of inProgressItems" [projectTask]="projectTask" [project]="id">
+                </ProjectTaskItem>
+        	</div>
+        	<div>
+    			<div class="project-task-category bg-success">
+					<h3 class="white">
+						DONE
+					</h3>
+            	</div>
+            	<ProjectTaskItem *ngFor="let projectTask of doneItems" [projectTask]="projectTask" [project]="id">    
+                </ProjectTaskItem> 
+        	</div>
+		</div>
+    </section>
+</div>

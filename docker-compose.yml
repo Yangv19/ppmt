@@ -1,0 +1,17 @@
+version: '3'
+services:
+    app:
+        container_name: spring-ppmt
+        image: v6yang/ppmt
+        ports:
+            - '4000:4000'
+    mongo:
+        container_name: mysql
+        image: mysql:8.0.22
+        ports:
+            - '3306:3306'
+        environment:
+            MYSQL_ROOT_PASSWORD: dbUserPassword123
+            MYSQL_DATABASE: ppmt
+        volumes:
+            - ./data:/var/lib/mysql

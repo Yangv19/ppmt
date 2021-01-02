@@ -1,0 +1,36 @@
+<nav class="navbar bg-primary">
+    <h2>
+        <a routerLink="/">
+            <i class="fas fa-tasks"></i>
+            <span class="hide-mobile"> Personal Project Management Tool</span>
+        </a>
+    </h2>
+    <ul *ngIf="isAuthenticated">
+        <li>
+            <a routerLink="/dashboard">
+                <i class="fas fa-columns"></i>
+                <span class="hide-mobile"> Dashboard</span>
+            </a>
+        </li>
+        <li>
+            <a (click)="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span class="hide-mobile"> Logout</span>
+            </a>
+        </li>
+    </ul>
+    <ul *ngIf="!isAuthenticated">
+        <li>
+            <a routerLink="/register">
+                <i class="fas fa-plus"></i>
+                <span class="hide-mobile"> Register</span>
+            </a>
+        </li>
+        <li>
+            <a routerLink="/login">
+                <i class="fas fa-sign-in-alt"></i>
+                <span class="hide-mobile"> Login</span>
+            </a>
+        </li>
+    </ul>
+</nav>

@@ -1,0 +1,34 @@
+<Alert></Alert>
+<section class="container">
+    <h1 class="large primary">Sign In</h1>
+    <p class="lead">
+        <i class="fas fa-user"></i>
+        <span class="hide-mobile"> Sign Into Your Account</span>
+    </p>
+    <form class="form" (submit)="onSubmit(loginForm)" #loginForm="ngForm">
+        <div class="form-group">
+            <input 
+                type="text" 
+                placeholder="Email Address"
+                name="email"
+                ngModel
+            />
+        </div>
+        <div class="form-group">
+            <input
+                type="password"
+                placeholder="Password"
+                name="password"
+                ngModel
+            />
+        </div>
+        <input type="submit" class="btn bg-primary" value="Login" />
+    </form>
+    <div class="my-1">
+        <p>
+            Don"t have an account?
+        </p>
+        <a routerLink="/register">Sign Up</a>
+    </div>
+</section>
+<Footer></Footer>

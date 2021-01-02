@@ -1,0 +1,36 @@
+<div class="project">
+    <div class="project-1">
+        <div>
+            <h4>Deadline:</h4>
+            <h4>{{project.end.slice(0, 10)}}</h4>
+        </div>
+        <div>
+            <h4 class="lead">
+                {{project.name}}
+            </h4>
+            <h4 class="gray">
+                {{project.description}}
+            </h4>
+        </div>
+    </div>
+    <div>
+        <a [routerLink]="['../taskboard', project.id]" class="project-button light">
+            <i class="fa fa-flag-checkered"></i>
+            <span class="hide-mobile">
+                Project Board
+            </span>
+        </a>
+        <a [routerLink]="['../update-project', project.id]" class="project-button success">
+            <i class="fa fa-edit"></i>
+            <span class="hide-mobile">
+                Update Project Info
+            </span>
+        </a>
+        <div class="project-button danger">
+            <i class="fa fa-minus-circle"></i>
+            <span class="hide-mobile" (click)="onClick(project.id)">
+                Delete Project
+            </span>
+        </div>
+    </div>
+</div>

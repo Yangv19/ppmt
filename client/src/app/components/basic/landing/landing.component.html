@@ -1,0 +1,17 @@
+<section class="full">
+    <div class="landing">
+        <Alert></Alert>
+        <h1 class="x-large">
+            Personal Project Management Tool
+        </h1>
+        <p class="lead">
+            Create your account to join active projects or start your own
+        </p>
+        <hr/>
+        <div class="my-1" *ngIf="!isAuthenticated">
+            <a class="btn bg-primary" routerLink="/register">Sign up</a>
+            <a class="btn bg-light" routerLink="login">Login</a>
+        </div>
+    </div>
+</section>
+<Footer></Footer>
