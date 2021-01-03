@@ -1,3 +1,4 @@
 export const environment = {
-  production: true
+  production: true,
+  proxy: "https://www.vincent-ppmt.com"
 };

@@ -5,7 +5,7 @@ services:
         image: v6yang/ppmt
         ports:
             - '4000:4000'
-    mongo:
+    mysql:
         container_name: mysql
         image: mysql:8.0.22
         ports:
