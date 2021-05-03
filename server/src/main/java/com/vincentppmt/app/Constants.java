@@ -1,4 +1,4 @@
-package com.vincentppmt.app.auth;
+package com.vincentppmt.app;
 
 public class Constants {
 	public static final long EXPIRATION_TIME = 900000; // Milliseconds

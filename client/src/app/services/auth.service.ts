@@ -55,8 +55,6 @@ export class AuthService {
             password
         }
         this.http.post<{token: string}>(BACKEND_URL + "/api/users/register", formData).subscribe(res => {
-            this.currentState.isAuthenticated = true;
-            this.currentState.user = res;
             localStorage.setItem("token", res.token);
             this.loadUser();
         })
@@ -68,8 +66,6 @@ export class AuthService {
             password
         }
         this.http.post<{token: string}>(BACKEND_URL + "/api/users/login", formData).subscribe(res => {
-            this.currentState.isAuthenticated = true;
-            this.currentState.user = res;
             localStorage.setItem("token", res.token);
             this.loadUser();
         })

@@ -18,7 +18,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     ngOnInit() {
         this.isAuthenticated = this.authService.getCurrentAuthState().isAuthenticated;
         this.authStateSub = this.authService.getAuthStateSubject().subscribe((authState : Auth) => {
-            this.isAuthenticated = authState.isAuthenticated
+            this.isAuthenticated = authState.isAuthenticated;
             if (this.isAuthenticated) {
                 this.router.navigate(["/"]);
             }
@@ -26,10 +26,10 @@ export class LoginComponent implements OnInit, OnDestroy {
     }
 
     onSubmit(form : NgForm) {
-        this.authService.login(form.value.email, form.value.password)
+        this.authService.login(form.value.email, form.value.password);
     }
 
     ngOnDestroy() {
-        this.authStateSub.unsubscribe()
+        this.authStateSub.unsubscribe();
     }
 }

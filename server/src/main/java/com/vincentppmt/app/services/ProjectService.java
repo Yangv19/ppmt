@@ -1,6 +1,5 @@
 package com.vincentppmt.app.services;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -9,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.vincentppmt.app.DAO.ProjectDAO;
 import com.vincentppmt.app.entities.Project;
-import com.vincentppmt.app.entities.User;
+import com.vincentppmt.app.entities.AppUser;
 import com.vincentppmt.app.exceptions.SingleException;
 
 @Service
@@ -22,7 +21,7 @@ public class ProjectService {
 	private UserService userService;
 	
 	public void validProjectId(Integer userId, Integer projectId) {
-		User user = userService.findUserById(userId);
+		AppUser user = userService.findUserById(userId);
 		Project project = projectDAO.getById(projectId);
 		
 		if (project == null) {
@@ -35,22 +34,16 @@ public class ProjectService {
 	}
 	
 	public void createProject(Project newProject, Integer userId) {
-		User user = userService.findUserById(userId);
+		AppUser user = userService.findUserById(userId);
 		newProject.setUser(user);
 		projectDAO.save(newProject);
 	}
 	
 	public List<Project> findAllProjects(Integer userId) {
-		User user = userService.findUserById(userId);
-		Iterable<Project> projects = projectDAO.findByUser(user);
-		List<Project> sortedProjects = new ArrayList<Project>();
-		
-		for (Project project : projects) {
-			sortedProjects.add(project);
-		}
-		
-		Collections.sort(sortedProjects); 
-		return sortedProjects;
+		AppUser user = userService.findUserById(userId);
+		List<Project> projects = projectDAO.findByUser(user);
+		Collections.sort(projects); 
+		return projects;
 	}
 	
 	public Project findProject(Integer userId, Integer projectId) {

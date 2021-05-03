@@ -13,7 +13,7 @@ import { Auth, ProjectTask } from "src/app/types/states";
 export class UpdateProjectTaskComponent implements OnInit, OnDestroy{
     isAuthenticated : boolean;
     projectTaskState: ProjectTask;
-    private project: string;
+    private id: string;
     private authStateSub: Subscription;
     private routeSub: Subscription;
     private projectTaskStateSub: Subscription;
@@ -50,13 +50,13 @@ export class UpdateProjectTaskComponent implements OnInit, OnDestroy{
             }
         });
         this.routeSub = this.route.params.subscribe(params => {
-            this.projectTaskService.getProject(params["projectId"], params["projectTaskId"]);
-            this.project = params["projectId"];
+            this.projectTaskService.getProjectTask(params["projectId"], params["projectTaskId"]);
+            this.id = params["projectId"];
         })
     }
 
     onSubmit() {
-        this.projectTaskService.updateProjectTask(this.project, this.projectTaskState.projectTask.id, this.form.value.summary, 
+        this.projectTaskService.updateProjectTask(this.id, this.projectTaskState.projectTask.id, this.form.value.summary, 
                                                   this.form.value.criteria, this.form.value.due, this.form.value.priority, 
                                                   this.form.value.status)
     }

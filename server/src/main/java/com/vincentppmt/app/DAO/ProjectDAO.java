@@ -1,11 +1,13 @@
 package com.vincentppmt.app.DAO;
 
+import java.util.List;
+
 import org.springframework.data.repository.CrudRepository;
 
+import com.vincentppmt.app.entities.AppUser;
 import com.vincentppmt.app.entities.Project;
-import com.vincentppmt.app.entities.User;
 
 public interface ProjectDAO extends CrudRepository<Project, Integer> {
-	Iterable<Project> findByUser(User user);
+	List<Project> findByUser(AppUser user);
 	Project getById(Integer id);
 }

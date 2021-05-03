@@ -33,7 +33,7 @@ public class Project implements Comparable<Project> {
 	
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	@NotNull(message = "Start date is required")
-	private Date start;
+	private Date begin;
 	
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	@NotNull(message = "End date is required")
@@ -41,9 +41,10 @@ public class Project implements Comparable<Project> {
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
-	private User user;
+	private AppUser user;
 	
 	@OneToMany(cascade = CascadeType.REFRESH, mappedBy = "project", orphanRemoval = true)
+	@JsonIgnore
 	private List<ProjectTask> projectTasks = new ArrayList<>();
 	
 	protected Project () {}
@@ -72,12 +73,12 @@ public class Project implements Comparable<Project> {
 		this.description = description;
 	}
 
-	public Date getStart() {
-		return start;
+	public Date getBegin() {
+		return begin;
 	}
 
-	public void setStart(Date start) {
-		this.start = start;
+	public void setBegin(Date start) {
+		this.begin = start;
 	}
 
 	public Date getEnd() {
@@ -88,11 +89,11 @@ public class Project implements Comparable<Project> {
 		this.end = end;
 	}
 
-	public User getUser() {
+	public AppUser getUser() {
 		return user;
 	}
 
-	public void setUser(User user) {
+	public void setUser(AppUser user) {
 		this.user = user;
 	}
 

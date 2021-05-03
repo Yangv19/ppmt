@@ -1,7 +1,7 @@
 package com.vincentppmt.app.auth;
 
-import static com.vincentppmt.app.auth.Constants.EXPIRATION_TIME;
-import static com.vincentppmt.app.auth.Constants.SECRET_TOKEN;
+import static com.vincentppmt.app.Constants.EXPIRATION_TIME;
+import static com.vincentppmt.app.Constants.SECRET_TOKEN;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
@@ -12,7 +12,7 @@ import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.vincentppmt.app.entities.User;
+import com.vincentppmt.app.entities.AppUser;
 import com.vincentppmt.app.exceptions.SingleException;
 import com.vincentppmt.app.requests.LoginRequest;
 import com.vincentppmt.app.services.UserService;
@@ -40,7 +40,7 @@ public class JWTAuth {
 	}
 	
 	public String login(LoginRequest login) {
-		User user = userService.findUserByEmail(login.getEmail());
+		AppUser user = userService.findUserByEmail(login.getEmail());
 		
 		if (user == null || !BCrypt.checkpw(login.getPassword(), user.getPassword())) {
 			throw new SingleException("Invalid Credentials");

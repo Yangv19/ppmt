@@ -67,7 +67,7 @@ export class ProjectTaskService {
         })
     }
 
-    getProject(projectId: string, projectTaskId: string) {
+    getProjectTask(projectId: string, projectTaskId: string) {
         this.http.get(BACKEND_URL + "/api/projectTasks/" + projectId + "/" + projectTaskId).subscribe(res => {
             this.currentState = {
                 ...this.currentState,

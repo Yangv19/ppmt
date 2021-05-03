@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.vincentppmt.app.auth.JWTAuth;
-import com.vincentppmt.app.entities.User;
+import com.vincentppmt.app.entities.AppUser;
 import com.vincentppmt.app.requests.LoginRequest;
 import com.vincentppmt.app.responses.TokenResponse;
 import com.vincentppmt.app.services.UserService;
@@ -34,7 +34,7 @@ public class UserController {
 	private JWTAuth auth;
 	
 	@PostMapping("/register")
-	public ResponseEntity<TokenResponse> register(@Valid @RequestBody User user, BindingResult result) {
+	public ResponseEntity<TokenResponse> register(@Valid @RequestBody AppUser user, BindingResult result) {
 		validateService.validateInput(result);
 		Integer id = userService.createUser(user);
 		String token = auth.register(id);
@@ -49,9 +49,9 @@ public class UserController {
 	}
 	
 	@GetMapping("")
-	public ResponseEntity<User> getUser(@RequestHeader("x-auth-token") String token) {
+	public ResponseEntity<AppUser> getUser(@RequestHeader("x-auth-token") String token) {
 		Integer id = auth.authenticate(token);
-		User user = userService.findUserById(id);
-		return new ResponseEntity<User>(user, HttpStatus.OK);
+		AppUser user = userService.findUserById(id);
+		return new ResponseEntity<AppUser>(user, HttpStatus.OK);
 	}
 }

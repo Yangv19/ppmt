@@ -16,7 +16,7 @@ export class UpdateProjectComponent {
     private authStateSub: Subscription;
     private projectStateSub: Subscription;
     private routeSub: Subscription;
-    form: FormGroup
+    form: FormGroup;
 
     constructor(private authService: AuthService, private projectService: ProjectService, 
                 private route: ActivatedRoute, private router: Router) {}
@@ -27,24 +27,24 @@ export class UpdateProjectComponent {
             description: new FormControl(null),
             start: new FormControl(null),
             end: new FormControl(null)
-        })
+        });
         this.isAuthenticated = this.authService.getCurrentAuthState().isAuthenticated;
         this.authStateSub = this.authService.getAuthStateSubject().subscribe((authState: Auth) => {
-            this.isAuthenticated = authState.isAuthenticated
+            this.isAuthenticated = authState.isAuthenticated;
         });
-        this.projectState = this.projectService.getCurrentProjectState()
+        this.projectState = this.projectService.getCurrentProjectState();
         this.projectStateSub = this.projectService.getProjectStateSubject().subscribe((projectState: Project) => {
-            this.projectState = projectState
-            if (projectState.loadedProject && projectState.project === null) {
+            this.projectState = projectState;
+            if (this.projectState.loadedProject && this.projectState.project === null) {
                 this.projectService.resetState();
-                this.router.navigate(["/NotFound"])
+                this.router.navigate(["/NotFound"]);
             } else {
                 this.form.setValue({
                     name: projectState.project.name,
                     description: projectState.project.description,
-                    start: projectState.project.start,
+                    start: projectState.project.begin,
                     end: projectState.project.end
-                })
+                });
             }
         });
         this.routeSub = this.route.params.subscribe(params => {

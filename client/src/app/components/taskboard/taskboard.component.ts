@@ -15,7 +15,7 @@ export class TaskBoardComponent implements OnInit, OnDestroy {
     todoItems : any[] = [];
     inProgressItems: any[] = [];
     doneItems: any[] = [];
-    id: string;
+    private id: string;
     private authStateSub: Subscription;
     private projectStateSub: Subscription;
     private routeSub: Subscription;

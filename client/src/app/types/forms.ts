@@ -12,7 +12,7 @@ export interface LoginForm {
 export interface ProjectForm {
     name: string,
     description: string,
-    start: string,
+    begin: string,
     end: string
 };
 

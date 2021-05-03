@@ -14,11 +14,12 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 @Entity
-public class User {
+public class AppUser {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,9 +39,10 @@ public class User {
 	private String password;
 	
 	@OneToMany(cascade = CascadeType.REFRESH, mappedBy = "user", orphanRemoval = true)
+	@JsonIgnore
 	private List<Project> projects = new ArrayList<>();
 	
-	protected User () {}
+	protected AppUser () {}
 
 	public Integer getId() {
 		return id;

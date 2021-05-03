@@ -1,6 +1,5 @@
 package com.vincentppmt.app.services;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -43,16 +42,10 @@ public class ProjectTaskService {
 	
 	public List<ProjectTask> findAllProjectTasks(Integer userId, Integer projectId) {
 		projectService.validProjectId(userId, projectId);
-		Project project = projectService.findProject(userId, projectId);
-		Iterable<ProjectTask> projectTasks = projectTaskDAO.findByProject(project);
-		List<ProjectTask> sortedProjectTasks = new ArrayList<ProjectTask>();
-		
-		for (ProjectTask projectTask : projectTasks) {
-			sortedProjectTasks.add(projectTask);
-		}
-		
-		Collections.sort(sortedProjectTasks); 
-		return sortedProjectTasks;
+		Project project = projectService.findProject(userId, projectId);		
+		List<ProjectTask> projectTasks = projectTaskDAO.findByProject(project);
+		Collections.sort(projectTasks); 
+		return projectTasks;
 	}
 	
 	public ProjectTask findProjectTask(Integer userId, Integer projectId, Integer projectTaskId) {

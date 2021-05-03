@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.vincentppmt.app.DAO.UserDAO;
-import com.vincentppmt.app.entities.User;
+import com.vincentppmt.app.entities.AppUser;
 import com.vincentppmt.app.exceptions.SingleException;
 
 @Service
@@ -14,7 +14,7 @@ public class UserService {
 	@Autowired
 	private UserDAO userDAO;
 	
-	public Integer createUser(User newUser) {
+	public Integer createUser(AppUser newUser) {
 		try {
 			newUser.setPassword(BCrypt.hashpw(newUser.getPassword(), BCrypt.gensalt()));
 			userDAO.save(newUser);
@@ -24,11 +24,11 @@ public class UserService {
 		}
 	}
 	
-	public User findUserByEmail(String email) {
+	public AppUser findUserByEmail(String email) {
 		return userDAO.findByEmail(email);
 	}
 	
-	public User findUserById(Integer id) {
+	public AppUser findUserById(Integer id) {
 		return userDAO.getById(id);
 	}
 }

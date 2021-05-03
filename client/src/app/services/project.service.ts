@@ -53,11 +53,11 @@ export class ProjectService {
         })
     }
 
-    createProject(name: string, description: string, start: string, end: string) {
+    createProject(name: string, description: string, begin: string, end: string) {
         const formData: ProjectForm = {
             name,
             description,
-            start,
+            begin,
             end
         }
         this.http.post(BACKEND_URL + "/api/projects", formData).subscribe(res => {
@@ -92,11 +92,11 @@ export class ProjectService {
         }
     }
 
-    updateProject(id: string, name: string, description: string, start: string, end: string) {
+    updateProject(id: string, name: string, description: string, begin: string, end: string) {
         const formData: ProjectForm = {
             name,
             description,
-            start,
+            begin,
             end
         }
         this.http.patch(BACKEND_URL + "/api/projects/" + id, formData).subscribe(res => {
