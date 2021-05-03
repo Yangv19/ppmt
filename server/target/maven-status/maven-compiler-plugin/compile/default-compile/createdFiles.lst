@@ -1,3 +1,4 @@
+com\vincentppmt\app\entities\AppUser.class
 com\vincentppmt\app\routes\ProjectTaskController.class
 com\vincentppmt\app\responses\ResponseExceptionHandler.class
 com\vincentppmt\app\routes\HomeController.class
@@ -9,6 +10,7 @@ com\vincentppmt\app\services\ProjectService.class
 com\vincentppmt\app\entities\Project.class
 com\vincentppmt\app\auth\JWTAuth.class
 com\vincentppmt\app\services\UserService.class
+com\vincentppmt\app\Constants.class
 com\vincentppmt\app\DAO\ProjectDAO.class
 com\vincentppmt\app\exceptions\SingleException.class
 com\vincentppmt\app\DAO\UserDAO.class
