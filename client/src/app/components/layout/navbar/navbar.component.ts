@@ -1,7 +1,8 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { Subscription } from "rxjs";
 import { AuthService } from "../../../services/auth.service"
-import { Auth } from "../../../types/states"
+import { Store } from '@ngrx/store'
+import { RootState } from '../../../types/reducers'
+import { Subscription } from 'rxjs'
 
 @Component({
     selector: 'Navbar',
@@ -9,22 +10,20 @@ import { Auth } from "../../../types/states"
 })
 export class NavbarComponent implements OnInit, OnDestroy {
     isAuthenticated : boolean;
-    private authStateSub: Subscription;
+    private authSub : Subscription;
 
-    constructor(private authService: AuthService) {}
+    constructor(private store: Store<RootState>, private authService: AuthService) {}
 
     ngOnInit() {
-        this.isAuthenticated = this.authService.getCurrentAuthState().isAuthenticated;
-        this.authStateSub = this.authService.getAuthStateSubject().subscribe((authState : Auth) => {
-            this.isAuthenticated = authState.isAuthenticated;
-        });
+        this.authSub = this.store.select(store => store.auth).subscribe(res => this.isAuthenticated = res.isAuthenticated);
     }
 
+    ngOnDestroy() {
+        this.authSub.unsubscribe();
+    }
+    
     logout() {
         this.authService.logout();
     }
 
-    ngOnDestroy() {
-        this.authStateSub.unsubscribe();
-    }
 }

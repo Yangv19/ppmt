@@ -1,72 +1,66 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { ActivatedRoute, Router } from "@angular/router";
+import { ActivatedRoute } from "@angular/router";
 import { Subscription } from "rxjs";
-import { AuthService } from "src/app/services/auth.service";
+import { Store } from '@ngrx/store'
+import { ProjectTaskItem, RootState } from '../../types/reducers'
 import { ProjectTaskService } from "src/app/services/project-task.service";
 import { ProjectService } from "src/app/services/project.service";
-import { Auth, Project, ProjectTask } from "src/app/types/states";
+import { ParamsService } from "src/app/services/params.service";
+import { skipWhile } from 'rxjs/operators';
 
 @Component({
     templateUrl: "./taskboard.component.html"
 })
 export class TaskBoardComponent implements OnInit, OnDestroy {
-    isAuthenticated : boolean;
-    projectTaskState: ProjectTask;
-    todoItems : any[] = [];
-    inProgressItems: any[] = [];
-    doneItems: any[] = [];
-    private id: string;
-    private authStateSub: Subscription;
-    private projectStateSub: Subscription;
+    todoItems : ProjectTaskItem[] = [];
+    inProgressItems: ProjectTaskItem[] = [];
+    doneItems: ProjectTaskItem[] = [];
+    loadedProjectTasks: boolean;
+    id: number;
+    private projectSub: Subscription;
     private routeSub: Subscription;
-    private projectTaskStateSub: Subscription;
+    private projectTaskSub: Subscription;
 
-    constructor(private authService: AuthService, private projectService: ProjectService, 
-        private route: ActivatedRoute, private router: Router, private projectTaskService: ProjectTaskService) {}
+    constructor(private store: Store<RootState>, private projectService: ProjectService, private projectTaskService: ProjectTaskService,
+                private paramsService: ParamsService, private route: ActivatedRoute) {}
 
     ngOnInit() {
-        this.isAuthenticated = this.authService.getCurrentAuthState().isAuthenticated;
-        this.authStateSub = this.authService.getAuthStateSubject().subscribe((authState: Auth) => {
-            this.isAuthenticated = authState.isAuthenticated
-        });
-        this.projectStateSub = this.projectService.getProjectStateSubject().subscribe((projectState: Project) => {
-            if (projectState.loadedProject && projectState.project === null) {
-                this.projectService.resetState();
-                this.router.navigate(["/NotFound"])
-            } else {
-                this.projectTaskService.getProjectTasks(this.id)
+        this.routeSub = this.route.params.subscribe(params => {
+            if (this.paramsService.validIntegerParam(params["id"])) {
+                this.projectService.getProject(params["id"]);
             }
         });
-        this.routeSub = this.route.params.subscribe(params => {
-            this.projectService.getProject(params["id"]);
-            this.id = params["id"]
-        })
-        this.projectTaskState = this.projectTaskService.getCurrentProjectTaskState();
-        this.projectTaskStateSub = this.projectTaskService.getProjectTaskStateSubject().subscribe((projectTaskState: ProjectTask) => {
+        this.projectSub = this.store.select(store => store.project)
+                          .pipe(skipWhile(project => !project.loadedProject)).subscribe(res => {
+            if (res.project !== null) {
+                this.id = res.project.id;
+                this.projectTaskService.getProjectTasks(this.id);
+            }
+        });
+        this.projectTaskSub = this.store.select(store => store.projectTask).subscribe(res => {
+            this.loadedProjectTasks = res.loadedProjectTasks;
             this.todoItems = [];
             this.inProgressItems = [];
             this.doneItems = [];
-            this.projectTaskState = projectTaskState;
-            for (let i = 0; i < this.projectTaskState.projectTasks.length; i++) {
-                if (this.projectTaskState.projectTasks[i].status === "TO DO") {
-                    this.todoItems.push(this.projectTaskState.projectTasks[i]);
+            for (let i = 0; i < res.projectTasks.length; i++) {
+                if (res.projectTasks[i].status === "TO DO") {
+                    this.todoItems.push(res.projectTasks[i]);
                 }
           
-                if (this.projectTaskState.projectTasks[i].status === "IN PROGRESS") {
-                    this.inProgressItems.push(this.projectTaskState.projectTasks[i]);
+                if (res.projectTasks[i].status === "IN PROGRESS") {
+                    this.inProgressItems.push(res.projectTasks[i]);
                 }
           
-                if (this.projectTaskState.projectTasks[i].status === "DONE") {
-                    this.doneItems.push(this.projectTaskState.projectTasks[i]);
+                if (res.projectTasks[i].status === "DONE") {
+                    this.doneItems.push(res.projectTasks[i]);
                 }
             }
         })
     }
 
     ngOnDestroy() {
-        this.authStateSub.unsubscribe()
-        this.projectStateSub.unsubscribe()
+        this.projectSub.unsubscribe()
         this.routeSub.unsubscribe()
-        this.projectTaskStateSub.unsubscribe()
+        this.projectTaskSub.unsubscribe()
     }
 }

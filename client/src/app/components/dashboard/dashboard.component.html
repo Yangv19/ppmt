@@ -1,15 +1,11 @@
-<NotAuthorized *ngIf="!isAuthenticated"></NotAuthorized>
-<div *ngIf="isAuthenticated">
-    <Spinner *ngIf="!projectState.loadedProjects"></Spinner> 
-    <Alert></Alert>
-    <section class="container" *ngIf="projectState.loadedProjects">
-        <h1 class="x-large center">
-            Projects
-        </h1>
-        <a class="btn bg-light dark" routerLink="../create-project">
-            <i class="fas fa-plus-circle"> Create A Project</i>
-        </a>
-        <hr class="my-1"/>
-        <ProjectItem *ngFor="let project of projectState.projects" [project]="project"></ProjectItem>
-    </section>   
-</div>
+<Spinner *ngIf="!project.loadedProjects"></Spinner> 
+<section class="container" *ngIf="project.loadedProjects">
+    <h1 class="x-large center">
+        Projects
+    </h1>
+    <a class="btn bg-light dark" routerLink="../create-project">
+        <i class="fas fa-plus-circle"> Create A Project</i>
+    </a>
+    <hr class="my-1"/>
+    <ProjectItem *ngFor="let project of project.projects" [project]="project"></ProjectItem>
+</section>   

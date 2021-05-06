@@ -1,11 +1,12 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Router } from "@angular/router";
-import { Subject } from "rxjs";
+import { Store } from '@ngrx/store'
+import { ProjectTaskItem, RootState } from '../types/reducers'
 import { environment } from "../../environments/environment"
 import { AlertService } from "./alert.service";
-import { ProjectTask } from "../types/states"
 import { ProjectTaskForm } from "../types/forms";
+import { SetProjectTasksAction, SetProjectTaskAction, ResetProjectTaskAction, ProjectTaskErrorAction } from '../types/projectTask.actions';
 
 const BACKEND_URL = environment.proxy;
 
@@ -13,47 +14,24 @@ const BACKEND_URL = environment.proxy;
     providedIn: "root"
 })
 export class ProjectTaskService {
-    private projectTaskStateSubject = new Subject<ProjectTask>();
-    private initialState : ProjectTask = {
-        projectTasks: [],
-        projectTask: null,
-        loadedProjectTasks: false,
-        loadedProjectTask: false
-    }
-    private currentState : ProjectTask = {
-        ...this.initialState
-    }
 
-    constructor(private http : HttpClient, private alertService: AlertService, private router: Router) {}
+    constructor(private http : HttpClient, private store: Store<RootState>,  
+                private alertService: AlertService, private router: Router) {}
 
-    getCurrentProjectTaskState() {
-        return this.currentState;
-    }
-
-    getProjectTaskStateSubject() {
-        return this.projectTaskStateSubject.asObservable();
-    }
-
-    getProjectTasks(id: string) {
-        this.http.get<any[]>(BACKEND_URL + "/api/projectTasks/" + id).subscribe(res => {
-            this.currentState = {
-                ...this.currentState,
-                projectTasks: res,
-                loadedProjectTasks: true
-            }
-            this.projectTaskStateSubject.next({
-                ...this.currentState});
+    getProjectTasks(id: number) {
+        this.http.get<ProjectTaskItem[]>(BACKEND_URL + "/api/projectTasks/" + id).subscribe(res => {
+            this.store.dispatch(new SetProjectTasksAction(res));
         })
     }
 
-    deleteProjectTask(projectId: string, projectTaskId: string) {
+    deleteProjectTask(projectId: number, projectTaskId: number) {
         this.http.delete(BACKEND_URL + "/api/projectTasks/" + projectId + "/" + projectTaskId).subscribe(res => {
             this.alertService.setAlert("Project Task Removed", "success")
             this.getProjectTasks(projectId);
         })
     }
 
-    createProjectTask(projectId: string, summary: string, criteria: string, due: string, priority: string, status: string) {
+    createProjectTask(id: number, summary: string, criteria: string, due: string, priority: string, status: string) {
         const formData : ProjectTaskForm = {
             summary,
             criteria,
@@ -61,39 +39,28 @@ export class ProjectTaskService {
             priority,
             status
         }
-        this.http.post(BACKEND_URL + "/api/projectTasks/" + projectId, formData).subscribe(res => {
+        this.http.post(BACKEND_URL + "/api/projectTasks/" + id, formData).subscribe(res => {
             this.alertService.setAlert("ProjectTask Created", "success");
-            this.router.navigate(["taskboard/" + projectId]);
+            this.getProjectTasks(id);
+            this.router.navigate(["taskboard/" + id]);
         })
     }
 
-    getProjectTask(projectId: string, projectTaskId: string) {
-        this.http.get(BACKEND_URL + "/api/projectTasks/" + projectId + "/" + projectTaskId).subscribe(res => {
-            this.currentState = {
-                ...this.currentState,
-                projectTask: res,
-                loadedProjectTask: true
-            }
-            this.projectTaskStateSubject.next({
-                ...this.currentState});
+    getProjectTask(projectId: number, projectTaskId: number) {
+        this.http.get<ProjectTaskItem>(BACKEND_URL + "/api/projectTasks/" + projectId + "/" + projectTaskId).subscribe(res => {
+            this.store.dispatch(new SetProjectTaskAction(res));
         }, err => {
-            this.currentState = {
-                ...this.currentState,
-                projectTask: null,
-                loadedProjectTask: true
-            }
-            this.projectTaskStateSubject.next({
-                ...this.currentState});
+            this.store.dispatch(new ProjectTaskErrorAction());
+            this.resetState();
+            this.router.navigate(["/notfound"]);
         })
     }
 
     resetState() {
-        this.currentState = {
-            ...this.initialState
-        }
+        this.store.dispatch(new ResetProjectTaskAction());
     }
 
-    updateProjectTask(projectId: string, projectTaskId: string, summary: string, criteria: string, due: string, priority: string, status: string) {
+    updateProjectTask(projectId: number, projectTaskId: number, summary: string, criteria: string, due: string, priority: string, status: string) {
         const formData: ProjectTaskForm = {
             summary,
             criteria,
@@ -103,6 +70,7 @@ export class ProjectTaskService {
         }
         this.http.patch(BACKEND_URL + "/api/projectTasks/" + projectId + "/" + projectTaskId, formData).subscribe(res => {
             this.alertService.setAlert("Project Task updated", "success");
+            this.getProjectTasks(projectId);
             this.router.navigate(["taskboard/" + projectId]);
         })
     }

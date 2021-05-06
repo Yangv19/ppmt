@@ -1,44 +1,40 @@
-<NotAuthorized *ngIf="!isAuthenticated"></NotAuthorized>
-<div *ngIf="isAuthenticated">
-    <Alert></Alert>
-    <section class="container">
-        <h1 class="large primary">Create Project Form</h1>
-        <p class="lead">
-            <i class="fas fa-plus"></i>
-            <span class="hide-mobile"> Create A New Project</span>
-        </p>
-        <form class="form" #createProjectForm="ngForm" (submit)="onSubmit(createProjectForm)">
-            <div class="form-group">
-                <input 
-                    type="text" 
-                    placeholder="Project Name" 
-                    name="name"
-                    ngModel
-                />
-            </div>
-            <div class="form-group">
-                <input 
-                    type="text" 
-                    placeholder="Project Description"
-                    name="description"
-                    ngModel
-                />
-            </div>
-            <div class="form-group">
-                <span>Start Date: </span>
-                <input
-                    type="date"
-                    name="start"
-                    ngModel
-                />
-                <span>End Date: </span>
-                <input
-                    type="date"
-                    name="end"
-                    ngModel
-                />
-            </div>
-            <input type="submit" class="my-1 btn bg-primary" />
-        </form>
-    </section>
-</div>
+<section class="container">
+    <h1 class="large primary">Create Project Form</h1>
+    <p class="lead">
+        <i class="fas fa-plus"></i>
+        <span class="hide-mobile"> Create A New Project</span>
+    </p>
+    <form class="form" #createProjectForm="ngForm" (submit)="onSubmit(createProjectForm)">
+        <div class="form-group">
+            <input 
+                type="text" 
+                placeholder="Project Name" 
+                name="name"
+                ngModel
+            />
+        </div>
+        <div class="form-group">
+            <input 
+                type="text" 
+                placeholder="Project Description"
+                name="description"
+                ngModel
+            />
+        </div>
+        <div class="form-group">
+            <span>Start Date: </span>
+            <input
+                type="date"
+                name="start"
+                ngModel
+            />
+            <span>End Date: </span>
+            <input
+                type="date"
+                name="end"
+                ngModel
+            />
+        </div>
+        <input type="submit" class="my-1 btn bg-primary" />
+    </form>
+</section>

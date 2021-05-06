@@ -24,6 +24,10 @@ import { TaskBoardComponent } from './components/taskboard/taskboard.component';
 import { ProjectTaskItemComponent } from './components/taskboard/project-task-item/project-task-item.component';
 import { CreateProjectTaskComponent } from './components/taskboard/create-project-task/create-project-task.component';
 import { UpdateProjectTaskComponent } from './components/taskboard/update-project-task/update-project-task.component';
+import { StoreModule } from '@ngrx/store';
+import RootReducer from './reducers/index.reducer';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { environment } from 'src/environments/environment';
 
 @NgModule({
   declarations: [
@@ -48,6 +52,11 @@ import { UpdateProjectTaskComponent } from './components/taskboard/update-projec
   ],
   imports: [
     BrowserModule,
+    StoreModule.forRoot(RootReducer),
+    StoreDevtoolsModule.instrument({
+      maxAge: 25,
+      logOnly: environment.production
+    }),
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,

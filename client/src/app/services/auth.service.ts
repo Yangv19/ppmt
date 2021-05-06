@@ -1,9 +1,11 @@
 import { Injectable } from "@angular/core";
 import { environment } from "../../environments/environment"
 import { HttpClient } from "@angular/common/http"
-import { Auth } from "../types/states"
-import { Subject } from "rxjs";
+import { Store } from '@ngrx/store'
+import { RootState, User } from '../types/reducers'
 import { RegisterForm, LoginForm } from "../types/forms"
+import { LoadUserValidAction, LoadUserInvalidAction } from "src/app/types/auth.actions";
+import { Router } from "@angular/router";
 
 const BACKEND_URL = environment.proxy;
 
@@ -11,41 +13,23 @@ const BACKEND_URL = environment.proxy;
     providedIn: "root"
 })
 export class AuthService {
-    private authStateSubject = new Subject<Auth>();
-    private initialAuthState: Auth = {
-        isAuthenticated: false,
-        user: null
-    }
-    private currentState : Auth = {
-        ...this.initialAuthState
-    }
 
-    constructor(private http: HttpClient) {}
+    constructor(private http: HttpClient, private store: Store<RootState>, private router: Router) {}
 
     loadUser() {
-        this.http.get(BACKEND_URL + "/api/users").subscribe(res => {
-            this.currentState.isAuthenticated = true;
-            this.currentState.user = res;
-            this.authStateSubject.next({
-                isAuthenticated : true, 
-                user : res});
-        })
-    }
-
-    getCurrentAuthState() {
-        return this.currentState;
-    }
-
-    getAuthStateSubject() {
-        return this.authStateSubject.asObservable();
+        if (localStorage.token) {
+            this.http.get<User>(BACKEND_URL + "/api/users").subscribe(res => {
+                this.store.dispatch(new LoadUserValidAction(res));
+            })
+        } else {
+            this.store.dispatch(new LoadUserInvalidAction());
+        }
     }
 
     logout() {
         localStorage.removeItem("token");
-        this.currentState = {
-            ...this.initialAuthState
-        }
-        this.authStateSubject.next(this.initialAuthState);
+        this.store.dispatch(new LoadUserInvalidAction());
+        this.router.navigate(["/"]);
     }
 
     signup(name: string, email: string, password: string) {
@@ -57,6 +41,7 @@ export class AuthService {
         this.http.post<{token: string}>(BACKEND_URL + "/api/users/register", formData).subscribe(res => {
             localStorage.setItem("token", res.token);
             this.loadUser();
+            this.router.navigate(["/"]);
         })
     }
 
@@ -68,6 +53,7 @@ export class AuthService {
         this.http.post<{token: string}>(BACKEND_URL + "/api/users/login", formData).subscribe(res => {
             localStorage.setItem("token", res.token);
             this.loadUser();
+            this.router.navigate(["/"]);
         })
     }
 }

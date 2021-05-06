@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { Subscription } from "rxjs";
-import { AuthService } from "../../../services/auth.service"
-import { Auth } from "../../../types/states"
+import { Subscription } from 'rxjs'
+import { Store } from '@ngrx/store'
+import { RootState } from '../../../types/reducers'
 
 @Component({
     selector: "Landing",
@@ -9,18 +9,15 @@ import { Auth } from "../../../types/states"
 })
 export class LandingComponent implements OnInit, OnDestroy {
     isAuthenticated : boolean;
-    private authStateSub: Subscription;
+    private authSub :Subscription;
 
-    constructor(private authService: AuthService) {}
+    constructor(private store: Store<RootState>) {}
 
     ngOnInit() {
-        this.isAuthenticated = this.authService.getCurrentAuthState().isAuthenticated;
-        this.authStateSub = this.authService.getAuthStateSubject().subscribe((authState : Auth) => {
-            this.isAuthenticated = authState.isAuthenticated;
-        });
+        this.authSub = this.store.select(store => store.auth).subscribe(res => this.isAuthenticated = res.isAuthenticated);
     }
 
     ngOnDestroy() {
-        this.authStateSub.unsubscribe();
+        this.authSub.unsubscribe();
     }
 }

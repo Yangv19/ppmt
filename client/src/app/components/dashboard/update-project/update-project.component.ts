@@ -1,25 +1,24 @@
-import { Component } from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import { FormControl, FormGroup } from "@angular/forms";
-import { ActivatedRoute, Router } from "@angular/router";
+import { ActivatedRoute } from "@angular/router";
 import { Subscription } from "rxjs";
-import { AuthService } from "src/app/services/auth.service";
+import { Store } from '@ngrx/store'
+import { RootState } from '../../../types/reducers'
 import { ProjectService } from "src/app/services/project.service";
-import { Auth } from "src/app/types/states";
-import { Project } from "src/app/types/states";
+import { ParamsService } from "src/app/services/params.service";
+import { skipWhile } from 'rxjs/operators';
 
 @Component({
     templateUrl: "./update-project.component.html"
 })
-export class UpdateProjectComponent {
-    isAuthenticated : boolean;
-    projectState: Project;
-    private authStateSub: Subscription;
-    private projectStateSub: Subscription;
+export class UpdateProjectComponent implements OnInit, OnDestroy {
+    private id: number;
+    private projectSub: Subscription;
     private routeSub: Subscription;
     form: FormGroup;
 
-    constructor(private authService: AuthService, private projectService: ProjectService, 
-                private route: ActivatedRoute, private router: Router) {}
+    constructor(private store: Store<RootState>, private projectService: ProjectService, private paramsService: ParamsService, 
+                private route: ActivatedRoute) {}
 
     ngOnInit() {
         this.form = new FormGroup({
@@ -28,38 +27,32 @@ export class UpdateProjectComponent {
             start: new FormControl(null),
             end: new FormControl(null)
         });
-        this.isAuthenticated = this.authService.getCurrentAuthState().isAuthenticated;
-        this.authStateSub = this.authService.getAuthStateSubject().subscribe((authState: Auth) => {
-            this.isAuthenticated = authState.isAuthenticated;
-        });
-        this.projectState = this.projectService.getCurrentProjectState();
-        this.projectStateSub = this.projectService.getProjectStateSubject().subscribe((projectState: Project) => {
-            this.projectState = projectState;
-            if (this.projectState.loadedProject && this.projectState.project === null) {
-                this.projectService.resetState();
-                this.router.navigate(["/NotFound"]);
-            } else {
+        this.routeSub = this.route.params.subscribe(params => {
+            if (this.paramsService.validIntegerParam(params["id"])) {
+                this.projectService.getProject(params["id"]);
+            }
+        })
+        this.projectSub = this.store.select(store => store.project)
+                          .pipe(skipWhile(project => !project.loadedProject)).subscribe(res => {
+            if (res.project !== null) {
+                this.id = res.project.id;
                 this.form.setValue({
-                    name: projectState.project.name,
-                    description: projectState.project.description,
-                    start: projectState.project.begin,
-                    end: projectState.project.end
+                    name: res.project.name,
+                    description: res.project.description,
+                    start: res.project.begin,
+                    end: res.project.end
                 });
             }
         });
-        this.routeSub = this.route.params.subscribe(params => {
-            this.projectService.getProject(params["id"]);
-        })
-    }
-
-    onSubmit() {
-        this.projectService.updateProject(this.projectState.project.id, this.form.value.name, this.form.value.description, 
-                                          this.form.value.start, this.form.value.end)
     }
 
     ngOnDestroy() {
-        this.authStateSub.unsubscribe()
-        this.projectStateSub.unsubscribe()
-        this.routeSub.unsubscribe()
+        this.routeSub.unsubscribe();
+        this.projectSub.unsubscribe();
+    }
+
+    onSubmit() {
+        this.projectService.updateProject(this.id, this.form.value.name, this.form.value.description, 
+                                          this.form.value.start, this.form.value.end)
     }
 }

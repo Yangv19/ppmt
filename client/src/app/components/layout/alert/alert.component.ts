@@ -1,7 +1,8 @@
 import { Component, OnDestroy, OnInit  } from "@angular/core";
-import { Subscription } from "rxjs";
-import { Alert } from "../../../types/states"
-import { AlertService } from "../../../services/alert.service"
+import { Subscription } from 'rxjs'
+import { Alert } from "../../../types/reducers"
+import { Store } from '@ngrx/store'
+import { RootState } from '../../../types/reducers'
 
 @Component({
     selector: "Alert",
@@ -9,18 +10,17 @@ import { AlertService } from "../../../services/alert.service"
 })
 export class AlertComponent implements OnInit, OnDestroy {
     alerts: Alert[];
-    private alertStateSub: Subscription;
+    private alertSub : Subscription;
 
-    constructor(private alertService: AlertService) {}
+    constructor(private store: Store<RootState>) {}
     
     ngOnInit() {
-        this.alerts = this.alertService.getCurrentAlertState();
-        this.alertStateSub = this.alertService.getAlertStateSubject().subscribe((alertState : Alert[]) => {
-            this.alerts = alertState;
+        this.alertSub = this.store.select(store => store.alert).subscribe(res => {
+            this.alerts = res;
         });
     }
 
     ngOnDestroy() {
-        this.alertStateSub.unsubscribe();
+        this.alertSub.unsubscribe();
     }
 }

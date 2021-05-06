@@ -1,28 +1,15 @@
 import { Injectable } from "@angular/core";
-import { Alert } from "../types/states"
-import { Subject } from "rxjs";
+import { Alert } from "../types/reducers"
+import { Store } from '@ngrx/store'
+import { RootState } from '../types/reducers'
 import { v4 } from "uuid";
+import { SetAlertAction, RemoveAlertAction } from "src/app/types/alert.actions"; 
 
 @Injectable({
     providedIn: "root"
 })
 export class AlertService {
-    private alertStateSubject = new Subject<Alert[]>();
-    private initialAlertState: Alert[] = []
-    private currentAlertState: Alert[] = [...this.initialAlertState];
-
-    getCurrentAlertState() {
-        return this.currentAlertState;
-    }
-
-    getAlertStateSubject() {
-        return this.alertStateSubject.asObservable();
-    }
-
-    removeAlert(id: string) {
-        this.currentAlertState = this.currentAlertState.filter(alert => alert.id !== id);
-        this.alertStateSubject.next(this.currentAlertState);
-    }
+    constructor(private store: Store<RootState>) {}
 
     setAlert(msg: string, alertType: string, timeout : number = 2000) {
         let newAlert : Alert = {
@@ -30,10 +17,9 @@ export class AlertService {
             alertType,
             id: v4()
         }
-        this.currentAlertState = [...this.currentAlertState, newAlert]
-        this.alertStateSubject.next(this.currentAlertState);
+        this.store.dispatch(new SetAlertAction(newAlert));
         setTimeout(() => {
-            this.removeAlert(newAlert.id);
+            this.store.dispatch(new RemoveAlertAction(newAlert));
         }, timeout);
     }
 }

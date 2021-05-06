@@ -1,11 +1,12 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { environment } from "../../environments/environment"
-import { Project } from "../types/states"
-import { Subject } from "rxjs";
+import { Store } from '@ngrx/store'
+import { ProjectItem, RootState } from '../types/reducers'
 import { AlertService } from "./alert.service";
 import { ProjectForm } from "../types/forms";
 import { Router } from "@angular/router";
+import { SetProjectsAction, SetProjectAction, ResetProjectAction, ProjectErrorAction } from '../types/project.actions';
 
 const BACKEND_URL = environment.proxy;
 
@@ -13,42 +14,19 @@ const BACKEND_URL = environment.proxy;
     providedIn: "root"
 })
 export class ProjectService {
-    private projectStateSubject = new Subject<Project>();
-    private initialState : Project = {
-        projects: [],
-        project: null,
-        loadedProjects: false,
-        loadedProject: false
-    }
-    private currentState : Project = {
-        ...this.initialState
-    }
 
-    constructor(private http : HttpClient, private alertService: AlertService, private router: Router) {}
-
-    getCurrentProjectState() {
-        return this.currentState;
-    }
-
-    getProjectStateSubject() {
-        return this.projectStateSubject.asObservable();
-    }
+    constructor(private http : HttpClient, private store: Store<RootState>, 
+                private alertService: AlertService, private router: Router) {}
 
     getProjects() {
-        this.http.get<any[]>(BACKEND_URL + "/api/projects").subscribe(res => {
-            this.currentState = {
-                ...this.currentState,
-                projects: res,
-                loadedProjects: true
-            }
-            this.projectStateSubject.next({
-                ...this.currentState});
-        })
+        this.http.get<ProjectItem[]>(BACKEND_URL + "/api/projects").subscribe(res => {
+            this.store.dispatch(new SetProjectsAction(res));
+        });
     }
 
-    deleteProject(id : string) {
+    deleteProject(id : number) {
         this.http.delete(BACKEND_URL + "/api/projects/" + id).subscribe(res => {
-            this.alertService.setAlert("Post Removed", "success");
+            this.alertService.setAlert("Project Removed", "success");
             this.getProjects();
         })
     }
@@ -62,37 +40,26 @@ export class ProjectService {
         }
         this.http.post(BACKEND_URL + "/api/projects", formData).subscribe(res => {
             this.alertService.setAlert("Project Created", "success");
+            this.getProjects();
             this.router.navigate(["dashboard"]);
         })
     }
 
-    getProject(id : string) {
-        this.http.get<any[]>(BACKEND_URL + "/api/projects/" + id).subscribe(res => {
-            this.currentState = {
-                ...this.currentState,
-                project: res,
-                loadedProject: true
-            }
-            this.projectStateSubject.next({
-                ...this.currentState});
+    getProject(id : number) {
+        this.http.get<ProjectItem>(BACKEND_URL + "/api/projects/" + id).subscribe(res => {
+            this.store.dispatch(new SetProjectAction(res));
         }, err => {
-            this.currentState = {
-                ...this.currentState,
-                project: null,
-                loadedProject: true
-            }
-            this.projectStateSubject.next({
-                ...this.currentState});
+            this.store.dispatch(new ProjectErrorAction());
+            this.resetState();
+            this.router.navigate(["/notfound"]);
         })
     }
 
     resetState() {
-        this.currentState = {
-            ...this.initialState
-        }
+        this.store.dispatch(new ResetProjectAction());
     }
 
-    updateProject(id: string, name: string, description: string, begin: string, end: string) {
+    updateProject(id: number, name: string, description: string, begin: string, end: string) {
         const formData: ProjectForm = {
             name,
             description,
@@ -100,7 +67,8 @@ export class ProjectService {
             end
         }
         this.http.patch(BACKEND_URL + "/api/projects/" + id, formData).subscribe(res => {
-            this.alertService.setAlert("Post updated", "success");
+            this.alertService.setAlert("Project updated", "success");
+            this.getProjects();
             this.router.navigate(["dashboard"]);
         })
     }

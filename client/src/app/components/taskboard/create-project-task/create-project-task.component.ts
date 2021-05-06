@@ -1,40 +1,37 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { NgForm } from "@angular/forms";
-import { ActivatedRoute, Router } from "@angular/router";
+import { ActivatedRoute } from "@angular/router";
 import { Subscription } from "rxjs";
-import { AuthService } from "src/app/services/auth.service";
+import { Store } from '@ngrx/store'
+import { RootState } from '../../../types/reducers'
 import { ProjectTaskService } from "src/app/services/project-task.service";
 import { ProjectService } from "src/app/services/project.service";
-import { Auth, Project } from "src/app/types/states";
+import { ParamsService } from "src/app/services/params.service";
+import { skipWhile } from 'rxjs/operators';
 
 @Component({
     templateUrl: "./create-project-task.component.html"
 })
 export class CreateProjectTaskComponent implements OnInit, OnDestroy{
-    isAuthenticated : boolean;
-    private id;
-    private authStateSub: Subscription;
-    private projectStateSub: Subscription;
+    private id: number;
+    private projectSub: Subscription;
     private routeSub: Subscription;
 
-    constructor(private authService: AuthService, private projectService: ProjectService, 
-        private route: ActivatedRoute, private router: Router, private projectTaskService: ProjectTaskService) {}
+    constructor(private store: Store<RootState>, private projectService: ProjectService, private projectTaskService: ProjectTaskService,
+                private paramsService: ParamsService, private route: ActivatedRoute) {}
 
     ngOnInit() {
-        this.isAuthenticated = this.authService.getCurrentAuthState().isAuthenticated;
-        this.authStateSub = this.authService.getAuthStateSubject().subscribe((authState: Auth) => {
-            this.isAuthenticated = authState.isAuthenticated
-        });
-        this.projectStateSub = this.projectService.getProjectStateSubject().subscribe((projectState: Project) => {
-            if (projectState.loadedProject && projectState.project === null) {
-                this.projectService.resetState();
-                this.router.navigate(["/NotFound"])
+        this.routeSub = this.route.params.subscribe(params => {
+            if (this.paramsService.validIntegerParam(params["id"])) {
+                this.projectService.getProject(params["id"]);
             }
         });
-        this.routeSub = this.route.params.subscribe(params => {
-            this.projectService.getProject(params["id"]);
-            this.id = params["id"];
-        })
+        this.projectSub = this.store.select(store => store.project)
+                          .pipe(skipWhile(project => !project.loadedProject)).subscribe(res => {
+            if (res.project !== null) {
+                 this.id = res.project.id;
+            }
+        });
     }
 
     onSubmit(form : NgForm) {
@@ -43,8 +40,7 @@ export class CreateProjectTaskComponent implements OnInit, OnDestroy{
     }
 
     ngOnDestroy() {
-        this.authStateSub.unsubscribe()
-        this.projectStateSub.unsubscribe()
+        this.projectSub.unsubscribe()
         this.routeSub.unsubscribe()
     }
 }

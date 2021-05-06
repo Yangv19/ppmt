@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { ProjectTaskService } from "src/app/services/project-task.service";
+import { ProjectTaskItem } from "src/app/types/reducers";
 
 @Component({
     selector: "ProjectTaskItem",
@@ -7,10 +8,10 @@ import { ProjectTaskService } from "src/app/services/project-task.service";
 })
 export class ProjectTaskItemComponent implements OnInit {
     @Input() 
-    projectTask: any;
+    projectTask: ProjectTaskItem;
 
     @Input()
-    project: string;
+    id: number;
 
     priorityClass: string;
 
@@ -30,7 +31,7 @@ export class ProjectTaskItemComponent implements OnInit {
         };
     }
 
-    onClick(projectId: string, projectTaskId: string) {
+    onClick(projectId: number, projectTaskId: number) {
         this.projectTaskService.deleteProjectTask(projectId, projectTaskId);
     }
 }

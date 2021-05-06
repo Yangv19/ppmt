@@ -1,34 +1,27 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { Subscription } from "rxjs";
-import { AuthService } from "src/app/services/auth.service";
 import { ProjectService } from "src/app/services/project.service";
-import { Project } from "src/app/types/states";
+import { Project } from "src/app/types/reducers";
+import { Subscription } from 'rxjs'
+import { Store } from '@ngrx/store'
+import { RootState } from '../../types/reducers'
 
 @Component({
     templateUrl: "./dashboard.component.html"
 })
-export class DashboardComponent implements OnInit, OnDestroy{
-    isAuthenticated : boolean;
-    private authStateSub: Subscription;
-    projectState: Project;
-    private projectStateSub: Subscription;
+export class DashboardComponent implements OnInit, OnDestroy {
+    project : Project;
+    private projectSub: Subscription;
 
-    constructor(private authService: AuthService, private projectService: ProjectService) {}
+    constructor(private store: Store<RootState>, private projectService: ProjectService) {}
 
     ngOnInit() {
-        this.isAuthenticated = this.authService.getCurrentAuthState().isAuthenticated;
-        this.authStateSub = this.authService.getAuthStateSubject().subscribe((authState) => {
-            this.isAuthenticated = authState.isAuthenticated;
-        });
-        this.projectState = this.projectService.getCurrentProjectState();
-        this.projectStateSub = this.projectService.getProjectStateSubject().subscribe((projectState) => {
-            this.projectState = projectState;
-        });
         this.projectService.getProjects();
+        this.projectSub = this.store.select(store => store.project).subscribe(res => {
+            this.project = res;
+        });
     }
 
     ngOnDestroy() {
-        this.authStateSub.unsubscribe();
-        this.projectStateSub.unsubscribe();
+        this.projectSub.unsubscribe();
     }
 }
