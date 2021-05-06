@@ -1,7 +1,7 @@
 package com.vincentppmt.app.entities;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -33,11 +33,11 @@ public class Project implements Comparable<Project> {
 	
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	@NotNull(message = "Start date is required")
-	private Date begin;
+	private LocalDate begin;
 	
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	@NotNull(message = "End date is required")
-	private Date end;
+	private LocalDate end;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
@@ -73,19 +73,19 @@ public class Project implements Comparable<Project> {
 		this.description = description;
 	}
 
-	public Date getBegin() {
+	public LocalDate getBegin() {
 		return begin;
 	}
 
-	public void setBegin(Date start) {
+	public void setBegin(LocalDate start) {
 		this.begin = start;
 	}
 
-	public Date getEnd() {
+	public LocalDate getEnd() {
 		return end;
 	}
 
-	public void setEnd(Date end) {
+	public void setEnd(LocalDate end) {
 		this.end = end;
 	}
 
@@ -107,12 +107,6 @@ public class Project implements Comparable<Project> {
 
 	@Override
 	public int compareTo(Project o) {
-		if (this.end.before(o.getEnd())) {
-			return -1;
-		} else if (this.end.after(o.getEnd())) {
-			return 1;
-		} else {
-			return 0;
-		}
+		return this.end.compareTo(o.getEnd());
 	}
 }

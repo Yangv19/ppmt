@@ -34,13 +34,13 @@ public class ResponseExceptionHandler {
 	
 	@ExceptionHandler(HttpMessageNotReadableException.class)
 	public ResponseEntity<SingleExceptionResponse> handleMissingBodyException(HttpMessageNotReadableException e) {
-		SingleExceptionResponse res = new SingleExceptionResponse("No request body found");
+		SingleExceptionResponse res = new SingleExceptionResponse("Requested Message Not Readable");
 		return new ResponseEntity<SingleExceptionResponse>(res, HttpStatus.BAD_REQUEST);
 	}
 	
 	@ExceptionHandler(HttpRequestMethodNotSupportedException.class)
 	public ResponseEntity<SingleExceptionResponse> handleMissingParameter(HttpRequestMethodNotSupportedException e) {
-		SingleExceptionResponse res = new SingleExceptionResponse("Required parameter not found");
+		SingleExceptionResponse res = new SingleExceptionResponse("Requested Method Not Supported");
 		return new ResponseEntity<SingleExceptionResponse>(res, HttpStatus.BAD_REQUEST);
 	}
 }

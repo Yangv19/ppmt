@@ -1,6 +1,6 @@
 package com.vincentppmt.app.entities;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -35,7 +35,7 @@ public class ProjectTask implements Comparable<ProjectTask> {
 	
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	@NotNull(message = "Due date is required")
-	private Date due;
+	private LocalDate due;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
@@ -83,11 +83,11 @@ public class ProjectTask implements Comparable<ProjectTask> {
 		this.status = status;
 	}
 
-	public Date getDue() {
+	public LocalDate getDue() {
 		return due;
 	}
 
-	public void setDue(Date due) {
+	public void setDue(LocalDate due) {
 		this.due = due;
 	}
 
@@ -101,12 +101,6 @@ public class ProjectTask implements Comparable<ProjectTask> {
 	
 	@Override
 	public int compareTo(ProjectTask o) {
-		if (this.due.before(o.getDue())) {
-			return -1;
-		} else if (this.due.after(o.getDue())) {
-			return 1;
-		} else {
-			return 0;
-		}
+		return this.due.compareTo(o.getDue());
 	}
 }
